@@ -1,28 +1,21 @@
 const path = require('path');
+const withPlugins = require('next-compose-plugins');
+const withTM = require('next-transpile-modules')([
+  // 트랜스파일 필요한 모듈 추가
+]);
+
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
-const withImages = require('next-images');
 
-module.exports = withBundleAnalyzer(
-  withImages({
-    webpack: function (config) {
-      const originalEntry = config.entry;
+module.exports = withPlugins([withBundleAnalyzer, withTM], {
+  webpack: function (config) {
 
-      config.entry = async () => {
-        const entries = await originalEntry();
-        if (entries['main.js'] && !entries['main.js'].includes('./polyfills.js')) {
-          entries['main.js'].unshift('./polyfills.js')
-        }
-        return entries;
-      }
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "~": path.resolve(__dirname, "./src")
+    };
 
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        "~": path.resolve(__dirname, "./src")
-      };
-
-      return config;
-    },
-  })
-);
+    return config;
+  },
+});
