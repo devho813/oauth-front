@@ -1,11 +1,25 @@
 import styled from 'styled-components';
+import { GoogleLogin } from 'react-google-login';
+import { useCallback } from 'react';
 
 export default function Home() {
+  const responseGoogle = useCallback((response) => {
+    console.log(response);
+  }, []);
+
   return (
     <HomeContainer>
       <h1>OAuth 2.0 로그인</h1>
       <ul>
-        <li>구글 로그인 버튼</li>
+        <li>
+          <GoogleLogin
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}
+            buttonText="Login"
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={'single_host_origin'}
+          />
+        </li>
         <li>애플 로그인 버튼</li>
         <li>네이버 로그인 버튼</li>
         <li>카카오 로그인 버튼</li>
